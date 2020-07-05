@@ -1,49 +1,45 @@
 import React from 'react';
+import axios from 'axios';
+import Movie from './Movie';
 
 class App extends React.Component {
+  state = {  //동적 데이터
+    isLoading : true,
+    movies : [], //이곳에 로딩된 영화 데이터 저장.
+  };
+
+  getMovies = async () => {
+    const {
+      data : {
+        data : {movies},
+      },
+    }
+     = await axios.get('https://yts.mx/api/v2/list_movies.json?sort_by=rating');
+     this.setState({movies : movies, isLoading:false});
+  }
   
-    constructor(props){
-      super(props);
-      console.log('hi');  
-  };
-
-  state ={
-  count : 0, 
-  };
-
-  add = () =>
-  {
-    this.setState({count: this.state.count+1})
-  }
-
-  minus = () =>
-  {
-    this.setState({count: this.state.count -1})
-  }
-
   componentDidMount() {
-    console.log('component rendered');
-  }
-  
-  componentDidUpdate(){
-    console.log('i just updated');
-  }
-
-  componentWillUnmount() {
-    console.log('goodbye component')
+    // 영화 데이터 로딩!
+    this.getMovies();   
   }
 
   render() {
-    console.log('render');
-    
-    return (
-    <div>
-      <h1>{this.state.count}</h1>
-      <button onClick={this.add}>Add</button>
-      <button onClick={this.minus}>Minus</button>
-    </div>
-    )
-
+    const {isLoading, movies} = this.state;
+    return <div>{isLoading ? 'Loading...' 
+    : movies.map( (movie) => {
+     
+      return <Movie 
+        key = {movie.id}
+        id = {movie.id}
+        year = {movie.year}
+        title = {movie.title}
+        summary = {movie.summary}
+        poster = {movie.medium_cover_image}
+      
+      />;
+      })}
+   
+    </div>;
   }
 }
 
